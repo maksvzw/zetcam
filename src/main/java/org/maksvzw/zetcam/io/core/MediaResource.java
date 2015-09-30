@@ -20,7 +20,7 @@ package org.maksvzw.zetcam.io.core;
 
 import java.nio.file.Path;
 import org.maksvzw.zetcam.core.MediaType;
-import org.maksvzw.zetcam.core.model.MediaInputProperties;
+import org.maksvzw.zetcam.core.model.MediaSourceProperties;
 import org.maksvzw.zetcam.core.utils.Paths;
 
 /**
@@ -30,11 +30,11 @@ import org.maksvzw.zetcam.core.utils.Paths;
 public class MediaResource 
 {
     private final Path filePath;
-    private final MediaInputProperties properties;
+    private final MediaSourceProperties properties;
     
     public MediaResource(
             final Path filePath, 
-            final MediaInputProperties properties) 
+            final MediaSourceProperties properties) 
     {
         if (filePath == null || filePath.getNameCount() <= 0)
             throw new IllegalArgumentException("No resource file path has been specified.");
@@ -65,7 +65,7 @@ public class MediaResource
         return this.properties.getType();
     }
     
-    public MediaInputProperties getProperties() {
+    public MediaSourceProperties getProperties() {
         return this.properties;
     }
 }

@@ -18,19 +18,16 @@
  */
 package org.maksvzw.zetcam.core.model;
 
+import org.maksvzw.zetcam.core.MediaFilter;
 import org.maksvzw.zetcam.core.MediaType;
 
 /**
  *
  * @author Lenny Knockaert
  */
-public abstract class MediaSource
+public abstract class MediaSourceSettings
 {
     public abstract MediaType getType();
     
-    public abstract String getStorageName();
-    
-    public abstract MediaSourceProperties getProperties();
-    
-    public abstract MediaSourceSettings getSettings();
+    public abstract MediaFilter buildFilterChain();
 }

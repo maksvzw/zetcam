@@ -16,21 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.maksvzw.zetcam.core.model;
+package org.maksvzw.zetcam.core.settings;
 
+import org.maksvzw.zetcam.core.MediaFilter;
 import org.maksvzw.zetcam.core.MediaType;
 
 /**
  *
  * @author Lenny Knockaert
  */
-public abstract class MediaSource
+public interface MediaDspSettings 
 {
-    public abstract MediaType getType();
-    
-    public abstract String getStorageName();
-    
-    public abstract MediaSourceProperties getProperties();
-    
-    public abstract MediaSourceSettings getSettings();
+    boolean isEnabled();
+    MediaType getType();
+    MediaFilter buildFilter();
 }

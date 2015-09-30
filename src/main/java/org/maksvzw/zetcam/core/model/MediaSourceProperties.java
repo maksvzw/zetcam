@@ -18,19 +18,35 @@
  */
 package org.maksvzw.zetcam.core.model;
 
+import java.io.Serializable;
+import java.util.Map;
 import org.maksvzw.zetcam.core.MediaType;
+import org.maksvzw.zetcam.core.utils.Paths;
 
 /**
  *
  * @author Lenny Knockaert
  */
-public abstract class MediaSource
+public abstract class MediaSourceProperties implements Serializable
 {
+    private final String fileName;
+    
+    public MediaSourceProperties(final String filePath) {
+        if (filePath == null || filePath.isEmpty())
+            throw new IllegalArgumentException("No file path has been specified.");
+        
+        this.fileName = Paths.getFileName(filePath, true);
+    }
+    
     public abstract MediaType getType();
     
-    public abstract String getStorageName();
+    public String getFileName() {
+        return this.fileName;
+    }
     
-    public abstract MediaSourceProperties getProperties();
+    public String getFileExtension() {
+        return Paths.getFileExtension(this.fileName, true);
+    }
     
-    public abstract MediaSourceSettings getSettings();
+    public abstract Map<String, String> getMetadata();
 }
