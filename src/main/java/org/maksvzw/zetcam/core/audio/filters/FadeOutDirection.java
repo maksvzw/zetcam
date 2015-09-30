@@ -18,33 +18,29 @@
  */
 package org.maksvzw.zetcam.core.audio.filters;
 
-import com.xuggle.xuggler.IAudioSamples;
-import org.maksvzw.zetcam.core.audio.buffers.AudioSampleBuffer;
-
 /**
  *
  * @author Lenny Knockaert
  */
-public class VolumeFilter extends AudioFilter
+public final class FadeOutDirection implements FadeDirection
 {
-    private final double volume;
-    
-    public VolumeFilter(double volume) 
-    {
-        if (Double.compare(volume, 0.0) < 0 || Double.compare(volume, 3.0) > 0)
-            throw new IllegalArgumentException("Volume multiplier cannot be smaller than zero or larger than three.");
-        
-        this.volume = volume;
+    @Override
+    public int getDirectionSignum() {
+        return -1;
     }
 
     @Override
-    protected IAudioSamples onFilter(IAudioSamples samples) 
-    {
-        if (this.volume != 1.0) {
-            try (AudioSampleBuffer buffer = AudioSampleBuffer.wrap(samples)) {
-                buffer.scaleAll(this.volume);
-            }
-        }
-        return super.filter(samples);
+    public long getCurrentFadeSample(long fadeStartSample, long fadeNumOfSamples, long currentSample) {
+        return fadeStartSample + fadeNumOfSamples - currentSample;
+    }
+
+    @Override
+    public boolean shouldIgnoreSamples(long fadeStartSample, long fadeNumOfSamples, long currentSample, long numOfSamples) {
+        return (currentSample + fadeNumOfSamples) < fadeStartSample; // before fade-out
+    }
+
+    @Override
+    public boolean shouldSilenceSamples(long fadeStartSample, long fadeNumOfSamples, long currentSample, long numOfSamples) {
+        return (fadeStartSample + fadeNumOfSamples) < currentSample; // after fade-out
     }
 }

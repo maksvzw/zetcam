@@ -18,6 +18,7 @@
  */
 package org.maksvzw.zetcam.core.audio;
 
+import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IAudioSamples.Format;
 import java.io.Serializable;
 import java.nio.ByteOrder;
@@ -30,6 +31,14 @@ import java.util.Objects;
  */
 public final class AudioFormat implements Serializable
 {
+    public static final AudioFormat of(final IAudioSamples samples) 
+    {
+        return new AudioFormat(
+                samples.getSampleRate(), 
+                samples.getFormat(), 
+                samples.getChannels());
+    }
+    
     private final int sampleRate;
     private final Format sampleFormat;
     private final int sampleSize;
@@ -49,8 +58,8 @@ public final class AudioFormat implements Serializable
         this.sampleFormat = sampleFormat;
         this.channels = channels;
         
-        boolean planar = false;
         int bytes = 0;
+        boolean planar = false;
         switch(sampleFormat) {
             case FMT_U8P:
                 planar = true;

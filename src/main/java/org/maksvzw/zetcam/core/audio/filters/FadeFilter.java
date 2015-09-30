@@ -21,6 +21,8 @@ package org.maksvzw.zetcam.core.audio.filters;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IRational;
 import java.time.Duration;
+import org.maksvzw.zetcam.core.audio.Audio;
+import org.maksvzw.zetcam.core.audio.AudioFormat;
 import org.maksvzw.zetcam.core.audio.buffers.AudioSampleBuffer;
 import org.maksvzw.zetcam.core.utils.Maths;
 
@@ -28,86 +30,43 @@ import org.maksvzw.zetcam.core.utils.Maths;
  *
  * @author Lenny Knockaert
  */
-public abstract class FadeFilter extends AudioFilter 
+public final class FadeFilter extends AudioFilter 
 {
-    private Duration startTime;
-    private long startSample;
-    private Duration duration;
-    private long numOfSamples;
-    private CurveType curveType;
-
+    private final FadeDirection direction;
+    private final CurveType curveType;
+    private final long fadeStartSample;
+    private final long fadeNumOfSamples;
+    
     public FadeFilter(
-            Duration startTime, 
-            Duration duration, 
-            CurveType curveType/*,
-            FadeDirection direction*/)
+            final AudioFormat audioFormat,
+            final FadeDirection direction,
+            final Duration fadeStartTime, 
+            final Duration fadeDuration, 
+            final CurveType curveType)
     {
-        this.setStartTime(startTime);
-        this.setDuration(duration);
-        this.setCurveType(curveType);
-    }
-    
-    public Duration getStartTime() {
-        return this.startTime;
-    }
-    
-    public void setStartTime(Duration startTime) 
-    {
-        if (startTime == null)
-            throw new IllegalArgumentException("No start time has been specified.");
-        
-        this.startTime = startTime;
-        this.startSample = 0;
-    }
-    
-    public Duration getDuration() {
-        return this.duration;
-    }
-    
-    public void setDuration(Duration d) 
-    {
-        if (d == null)
+        if (audioFormat == null)
+            throw new IllegalArgumentException("No audio format has been specified.");
+        if (direction == null)
+            throw new IllegalArgumentException("No fade direction has been specified.");
+        if (fadeStartTime == null)
+            throw new IllegalArgumentException("No fade start time has been specified.");
+        if (fadeDuration == null)
             throw new IllegalArgumentException("No fade duration has been specified.");
-        
-        this.duration = d;
-        this.numOfSamples = 0;
-    }
-    
-    public CurveType getCurveType() {
-        return this.curveType;
-    }
-    
-    public void setCurveType(CurveType curve) 
-    {
-        if (curve == null)
+        if (curveType == null)
             throw new IllegalArgumentException("No curve type has been specified.");
         
-        this.curveType = curve;
+        this.direction = direction;
+        this.curveType = curveType;
+        
+        /** Convert start time and duration of the fade transition to 
+         sample numbers. */
+        this.fadeStartSample = Audio.getNumOfSamples(audioFormat, fadeStartTime);
+        this.fadeNumOfSamples = Audio.getNumOfSamples(audioFormat, fadeDuration); 
     }
     
-    public abstract FadeDirection getDirection();
-
     @Override
     protected IAudioSamples onFilter(IAudioSamples samples) 
     {
-        /** Convert start time and duration of the fade transition to 
-         samples if that wasn't already the case. */
-        if (this.startSample == 0 && this.startTime != Duration.ZERO) {
-            this.startSample = IRational.rescale(
-                    this.startTime.toNanos(),
-                    1, samples.getSampleRate(),
-                    1, 1000000000,
-                    IRational.Rounding.ROUND_NEAR_INF);
-        }
-        
-        if (this.numOfSamples == 0 && this.duration != Duration.ZERO) {
-            this.numOfSamples = IRational.rescale(
-                    this.duration.toNanos(),
-                    1, samples.getSampleRate(),
-                    1, 1000000000,
-                    IRational.Rounding.ROUND_NEAR_INF);
-        }
-        
         /* Convert the start time and duration of this audio frame to samples. */
         final long numOfSamples = samples.getNumSamples();
         final long currentSample = IRational.sRescale(
@@ -116,9 +75,9 @@ public abstract class FadeFilter extends AudioFilter
                 IRational.make(1, samples.getSampleRate()));
         
         /* No fade transition is to be applied after a fade-in or before a fade-out.*/
-        if (this.shouldIgnoreSamples(
-                this.startSample, 
-                this.numOfSamples, 
+        if (this.direction.shouldIgnoreSamples(
+                this.fadeStartSample, 
+                this.fadeNumOfSamples, 
                 currentSample, 
                 numOfSamples))
         {
@@ -128,9 +87,9 @@ public abstract class FadeFilter extends AudioFilter
         try (AudioSampleBuffer buffer = AudioSampleBuffer.wrap(samples)) 
         {
             /* The samples must be silenced before a fade-in and after a fade-out. */
-            if (this.shouldSilenceSamples(
-                    this.startSample, 
-                    this.numOfSamples, 
+            if (this.direction.shouldSilenceSamples(
+                    this.fadeStartSample, 
+                    this.fadeNumOfSamples, 
                     currentSample, 
                     numOfSamples))
             {
@@ -138,26 +97,21 @@ public abstract class FadeFilter extends AudioFilter
                 return super.filter(samples);
             } 
             
-            /* The samples must be scaled accordingly. */
-            final long start = this.getCurrentFadeSample(this.startSample, this.numOfSamples, currentSample);
-            final int dir = this.getDirectionSignum();
-
+            /* The samples must be scaled in a specific direction. */
+            final int dir = this.direction.getDirectionSignum();
+            final long start = this.direction.getCurrentFadeSample(
+                    this.fadeStartSample, 
+                    this.fadeNumOfSamples, 
+                    currentSample);
+ 
             double gain; 
             while(buffer.hasRemaining()) {
-                gain = calculateFadeGain(start + buffer.position() * dir, this.numOfSamples);
+                gain = calculateFadeGain(start + buffer.position() * dir, this.fadeNumOfSamples);
                 buffer.scale(gain);
             }
         }
         return super.filter(samples);
     }
-    
-    protected abstract boolean shouldIgnoreSamples(long fadeStartSample, long fadeNumOfSamples, long currentSample, long numOfSamples);
-    
-    protected abstract boolean shouldSilenceSamples(long fadeStartSample, long fadeNumOfSamples, long currentSample, long numOfSamples);
-    
-    protected abstract long getCurrentFadeSample(long fadeStartSample, long fadeNumOfSamples, long currentSample);
-    
-    protected abstract int getDirectionSignum();
     
     private double calculateFadeGain(long index, long range) 
     {

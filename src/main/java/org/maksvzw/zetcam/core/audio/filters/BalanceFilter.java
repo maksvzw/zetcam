@@ -28,18 +28,9 @@ import org.maksvzw.zetcam.core.utils.Maths;
  */
 public final class BalanceFilter extends AudioFilter
 {
-    private double balanceValue;
+    private final double balanceValue;
     
     public BalanceFilter(final double balanceValue) 
-    {
-        this.setBalanceValue(balanceValue);
-    }
-    
-    public double getBalanceValue() {
-        return this.balanceValue;
-    }
-    
-    public void setBalanceValue(double balanceValue) 
     {
         if (Double.compare(balanceValue, -1.0f) < 0 ||
             Double.compare(balanceValue, 1.0f) > 0)

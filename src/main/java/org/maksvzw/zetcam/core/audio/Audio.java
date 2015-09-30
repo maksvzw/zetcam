@@ -20,6 +20,7 @@ package org.maksvzw.zetcam.core.audio;
 
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IRational;
+import java.time.Duration;
 
 /**
  *
@@ -70,5 +71,14 @@ public final class Audio
                 pts);
         
         return samples;
+    }
+    
+    public static final long getNumOfSamples(final AudioFormat audioFormat, final Duration d) 
+    {
+        return IRational.rescale(
+                    d.toNanos(),
+                    1, audioFormat.getSampleRate(),
+                    1, 1000000000,
+                    IRational.Rounding.ROUND_NEAR_INF);
     }
 }

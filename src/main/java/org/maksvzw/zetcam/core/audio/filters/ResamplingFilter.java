@@ -29,7 +29,7 @@ import org.maksvzw.zetcam.core.audio.buffers.AudioSampleBuffer;
  */
 public class ResamplingFilter extends AudioFilter
 {
-    private AudioFormat dstFormat;
+    private final AudioFormat dstFormat;
     private IAudioResampler resampler;
     
     public ResamplingFilter(final AudioFormat audioFormat) 
@@ -42,17 +42,6 @@ public class ResamplingFilter extends AudioFilter
     
     public AudioFormat getOutputFormat() {
         return this.dstFormat;
-    }
-    
-    public void setOutputFormat(AudioFormat audioFormat)
-    {
-        if (audioFormat == null)
-            throw new IllegalArgumentException("No audio format has been specified.");
-        if (audioFormat.equals(this.dstFormat))
-            return;
-        
-        this.dstFormat = audioFormat;
-        this.releaseResampler();
     }
     
     @Override

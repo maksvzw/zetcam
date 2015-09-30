@@ -19,14 +19,27 @@
 package org.maksvzw.zetcam.core.audio.filters;
 
 /**
- * Directions of fade transitions.
- * 
+ *
  * @author Lenny Knockaert
  */
-public enum FadeDirection 
+public interface FadeDirection
 {
-    /** Select fade-in. */
-    IN,
-    /** Select fade-out. */
-    OUT;
+    int getDirectionSignum();
+    
+    long getCurrentFadeSample(
+            final long fadeStartSample, 
+            final long fadeNumOfSamples,
+            final long currentSample);
+    
+    boolean shouldIgnoreSamples(
+            final long fadeStartSample, 
+            final long fadeNumOfSamples, 
+            final long currentSample, 
+            final long numOfSamples);
+    
+    boolean shouldSilenceSamples(
+            final long fadeStartSample, 
+            final long fadeNumOfSamples, 
+            final long currentSample, 
+            final long numOfSamples);
 }
