@@ -16,33 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.maksvzw.zetcam.core.images.filters;
+package org.maksvzw.zetcam.core.settings.images;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
+import org.maksvzw.zetcam.core.settings.images.ImageDspSettings;
+import java.io.Serializable;
+import org.maksvzw.zetcam.core.images.filters.ImageFilter;
+import org.maksvzw.zetcam.core.images.filters.GrayscaleFilter;
 
 /**
  *
  * @author Lenny Knockaert
  */
-public class ImageFilterAdapter extends ImageFilter
+public final class GrayscaleSettings extends ImageDspSettings implements Serializable
 {
-    private final BufferedImageOp wrappedImageOp;
+    private boolean isEnabled;
     
-    public ImageFilterAdapter(final BufferedImageOp imageOp) 
-    {
-        if (imageOp == null)
-            throw new IllegalArgumentException("No image operations object has been specified.");
-        
-        this.wrappedImageOp = imageOp;
+    public GrayscaleSettings() 
+    { 
+        this.setEnabled(false);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return this.isEnabled;
     }
     
-    protected BufferedImageOp getImageOp() {
-        return this.wrappedImageOp;
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
     
     @Override
-    protected BufferedImage onFilter(BufferedImage src) {
-        return this.wrappedImageOp.filter(src, src);
+    public ImageFilter buildFilter() 
+    {
+        if (!this.isEnabled)
+            return null;
+        
+        return new GrayscaleFilter();
     }
 }

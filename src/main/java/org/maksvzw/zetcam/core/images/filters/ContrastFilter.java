@@ -24,51 +24,21 @@ package org.maksvzw.zetcam.core.images.filters;
  */
 public final class ContrastFilter extends ImageFilterAdapter
 {
-    public static final ContrastFilter create(final float contrast) {
-        return new ContrastFilter(new com.jhlabs.image.ContrastFilter(), contrast, 1.0f);
-    } 
-    
-    public static final ContrastFilter create(
-            final float contrast, 
-            final float brightness)
+    public ContrastFilter(final float contrast, final float brightness) 
     {
-        return new ContrastFilter(new com.jhlabs.image.ContrastFilter(), contrast, brightness);
-    } 
-    
-    private final com.jhlabs.image.ContrastFilter filter;
-    
-    private ContrastFilter(
-            final com.jhlabs.image.ContrastFilter filter, 
-            final float contrast, final float brightness) 
-    {
-        super(filter, true);
+        super(new com.jhlabs.image.ContrastFilter());
         
-        this.filter = filter;
-        this.setContrast(contrast);
-        this.setBrightness(brightness);
-    }
-    
-    public float getContrast() {
-        return this.filter.getContrast();
-    }
-    
-    public void setContrast(final float contrast) 
-    {
         if (Float.compare(contrast, 0.0f) < 0 || Float.compare(contrast, 10.0f) > 0)
             throw new IllegalArgumentException("Invalid contrast factor has been specified. The value must be between 0.0 and 10.0");
-        
-        this.filter.setContrast(contrast);
-    }
-    
-    public float getBrightness() {
-        return this.filter.getBrightness();
-    }
-    
-    public void setBrightness(final float brightness)
-    {
         if (Float.compare(brightness, 0.0f) < 0 || Float.compare(brightness, 10.0f) > 0)
             throw new IllegalArgumentException("Invalid brightness factor has been specified. The value must be between 0.0 and 10.0");
-        
-        this.filter.setBrightness(brightness);
+  
+        this.getImageOp().setContrast(contrast);
+        this.getImageOp().setBrightness(brightness);
+    }
+    
+    @Override 
+    protected com.jhlabs.image.ContrastFilter getImageOp() {
+        return (com.jhlabs.image.ContrastFilter)super.getImageOp();
     }
 }

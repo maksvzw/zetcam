@@ -26,29 +26,18 @@ import com.jhlabs.image.GaussianFilter;
  */
 public final class GaussianBlurFilter extends ImageFilterAdapter
 {
-    public static final GaussianBlurFilter create(final float radius) {
-        return new GaussianBlurFilter(new GaussianFilter(), radius);
-    } 
-    
-    private final GaussianFilter filter;
-    
-    private GaussianBlurFilter(final GaussianFilter filter, final float radius) 
+    public GaussianBlurFilter(final float radius) 
     {
-        super(filter, true);
+        super(new com.jhlabs.image.GaussianFilter());
         
-        this.filter = filter;
-        this.setRadius(radius);
-    }
-    
-    public float getRadius() {
-        return this.filter.getRadius();
-    }
-    
-    public void setRadius(final float radius)
-    {
         if (Float.compare(radius, 1.0f) < 0)
             throw new IllegalArgumentException("Invalid blur radius specified. It cannot be smaller than 1.");
         
-        this.filter.setRadius(radius);
+        this.getImageOp().setRadius(radius);
+    }
+    
+    @Override
+    protected com.jhlabs.image.GaussianFilter getImageOp() {
+        return (com.jhlabs.image.GaussianFilter)super.getImageOp();
     }
 }

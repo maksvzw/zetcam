@@ -16,15 +16,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.maksvzw.zetcam.core.images.filters;
+package org.maksvzw.zetcam.core.settings.images;
+
+import java.io.Serializable;
+import org.maksvzw.zetcam.core.images.filters.ImageFilter;
+import org.maksvzw.zetcam.core.MediaType;
+import org.maksvzw.zetcam.core.settings.MediaDspSettings;
 
 /**
  *
  * @author Lenny Knockaert
  */
-public final class GrayscaleFilter extends ImageFilterAdapter
+public abstract class ImageDspSettings implements MediaDspSettings, Serializable
 {
-    public GrayscaleFilter() {
-        super(new com.jhlabs.image.GrayscaleFilter());
+    @Override
+    public MediaType getType() {
+        return MediaType.IMAGE;
     }
+    
+    @Override
+    public abstract ImageFilter buildFilter();
 }

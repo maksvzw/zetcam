@@ -28,8 +28,6 @@ import org.maksvzw.zetcam.core.MediaType;
  */
 public abstract class ImageFilter extends MediaFilter<BufferedImage>
 {
-    public abstract boolean supportsInPlaceFiltering();
-    
     @Override
     public MediaType getType() {
         return MediaType.IMAGE;
