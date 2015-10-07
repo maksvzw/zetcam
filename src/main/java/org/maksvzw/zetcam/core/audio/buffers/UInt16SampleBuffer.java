@@ -19,7 +19,7 @@
 package org.maksvzw.zetcam.core.audio.buffers;
 
 import com.xuggle.xuggler.IAudioSamples;
-import org.maksvzw.zetcam.core.utils.Maths;
+import org.maksvzw.zetcam.infrastructure.Maths;
 
 /**
  *

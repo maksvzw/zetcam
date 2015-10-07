@@ -24,7 +24,7 @@ import java.time.Duration;
 import org.maksvzw.zetcam.core.audio.Audio;
 import org.maksvzw.zetcam.core.audio.AudioFormat;
 import org.maksvzw.zetcam.core.audio.buffers.AudioSampleBuffer;
-import org.maksvzw.zetcam.core.utils.Maths;
+import org.maksvzw.zetcam.infrastructure.Maths;
 
 /**
  *

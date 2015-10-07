@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (C) 2015 Lenny Knockaert <lknockx@gmail.com>
  *
  * This file is part of ZetCam
@@ -16,37 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.maksvzw.zetcam.core.model;
+package org.maksvzw.zetcam.infrastructure.collections;
 
-import java.io.Serializable;
-import java.util.Map;
-import org.maksvzw.zetcam.core.MediaType;
-import org.maksvzw.zetcam.infrastructure.Paths;
+import java.util.Collection;
 
 /**
  *
+ * @param <E>
  * @author Lenny Knockaert
  */
-public abstract class MediaSourceProperties implements Serializable
+public class CircularFifoBuffer<E> extends BoundedFifoBuffer<E>
 {
-    private final String fileName;
+    public CircularFifoBuffer() 
+    {
+        super(32);
+    }
     
-    public MediaSourceProperties(final String filePath) {
-        if (filePath == null || filePath.isEmpty())
-            throw new IllegalArgumentException("No file path has been specified.");
+    public CircularFifoBuffer(int capacity) 
+    {
+        super(capacity);
+    }
+    
+    public CircularFifoBuffer(Collection<? extends E> items) 
+    {
+        super(items);
+    }
+
+    @Override
+    public E write(E element) 
+    {
+        if (this.isFull())
+            this.read();
         
-        this.fileName = Paths.getName(filePath);
+        return super.write(element);
     }
-    
-    public abstract MediaType getType();
-    
-    public String getFileName() {
-        return this.fileName;
-    }
-    
-    public String getFileExtension() {
-        return Paths.getExtension(this.fileName);
-    }
-    
-    public abstract Map<String, String> getMetadata();
 }

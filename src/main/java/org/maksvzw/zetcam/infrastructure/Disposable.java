@@ -16,37 +16,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-package org.maksvzw.zetcam.core.model;
+package org.maksvzw.zetcam.infrastructure;
 
-import java.io.Serializable;
-import java.util.Map;
-import org.maksvzw.zetcam.core.MediaType;
-import org.maksvzw.zetcam.infrastructure.Paths;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  *
  * @author Lenny Knockaert
  */
-public abstract class MediaSourceProperties implements Serializable
+public abstract class Disposable implements AutoCloseable
 {
-    private final String fileName;
+    private AtomicBoolean isClosed = new AtomicBoolean(false);
     
-    public MediaSourceProperties(final String filePath) {
-        if (filePath == null || filePath.isEmpty())
-            throw new IllegalArgumentException("No file path has been specified.");
+    public final boolean isClosed() {
+        return this.isClosed.get();
+    }
+    
+    protected void checkClosed() {
+        if (this.isClosed.get())
+            throw new IllegalStateException("This object has already been released from memory.");
+    }
+    
+    @Override
+    public final void close() throws Exception
+    {
+        if (this.isClosed.get())
+            return;
         
-        this.fileName = Paths.getName(filePath);
+        this.release();
+        this.isClosed.set(true);
     }
     
-    public abstract MediaType getType();
-    
-    public String getFileName() {
-        return this.fileName;
-    }
-    
-    public String getFileExtension() {
-        return Paths.getExtension(this.fileName);
-    }
-    
-    public abstract Map<String, String> getMetadata();
+    protected abstract void release() throws Exception;
 }

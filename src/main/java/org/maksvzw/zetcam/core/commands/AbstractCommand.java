@@ -20,7 +20,7 @@ package org.maksvzw.zetcam.core.commands;
 
 import java.util.EnumSet;
 import java.util.Set;
-import org.maksvzw.zetcam.core.utils.Bits;
+import org.maksvzw.zetcam.infrastructure.Bits;
 
 /**
  *

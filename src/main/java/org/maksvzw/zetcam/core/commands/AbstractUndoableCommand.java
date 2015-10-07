@@ -18,7 +18,7 @@
  */
 package org.maksvzw.zetcam.core.commands;
 
-import org.maksvzw.zetcam.core.utils.Bits;
+import org.maksvzw.zetcam.infrastructure.Bits;
 
 /**
  *

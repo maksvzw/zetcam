@@ -37,7 +37,7 @@ import java.util.Iterator;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
-import org.maksvzw.zetcam.core.utils.Paths;
+import org.maksvzw.zetcam.infrastructure.Paths;
 
 /**
  *
@@ -77,7 +77,7 @@ public final class Image
         if (imagePath == null)
             throw new IllegalArgumentException("No image file has been specified.");
         
-        final String suffix = Paths.getFileExtension(imagePath.toString(), true);
+        final String suffix = Paths.getExtension(imagePath.toString());
         final Iterator<ImageReader> iter = ImageIO.getImageReadersBySuffix(suffix);
         if (!iter.hasNext())
             throw new IOException("'"+imagePath + "' is not a known image file.");
