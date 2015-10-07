@@ -70,6 +70,12 @@
             <artifactId>filters</artifactId>
             <version>2.0.235-1</version>
         </dependency>
+        <dependency>
+            <groupId>org.immutables</groupId>
+            <artifactId>value</artifactId>
+            <version>2.0.21</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
