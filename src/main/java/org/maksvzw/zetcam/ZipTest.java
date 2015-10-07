@@ -49,10 +49,7 @@ public class ZipTest
         env.put("encoding", "utf-8");
         env.put("create", "false");
         
-        URI uri = archivePath.toUri();
-        String path = archivePath.toUri().toString().replace("file:///", "jar:file:/");
-        final URI archiveUri = URI.create(path);
-        
+        final URI archiveUri = URI.create("jar:file:" + archivePath.toUri().getRawPath());
         try (FileSystem zpfs = FileSystems.newFileSystem(archiveUri, env)) 
         {
             final Path audioPath = zpfs.getPath("test.wav");
